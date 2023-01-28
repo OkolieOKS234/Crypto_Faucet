@@ -1,23 +1,38 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import axios from 'axios';
 
 function App() {
+  const [address, setAddress] = useState('');
+  const [amount, setAmount] = useState('');
+  const [status, setStatus] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post('/send', {
+        address: address,
+        amount: amount
+      });
+      setStatus(response.data.message);
+    } catch (error) {
+      setStatus('Transaction failed');
+    }
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <form onSubmit={handleSubmit}>
+        <label>
+          Address:
+          <input type="text" value={address} onChange={e => setAddress(e.target.value)} />
+        </label>
+        <label>
+          Amount:
+          <input type="text" value={amount} onChange={e => setAmount(e.target.value)} />
+        </label>
+        <button type="submit">Send</button>
+      </form>
+      <p>{status}</p>
     </div>
   );
 }
